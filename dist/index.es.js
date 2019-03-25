@@ -19262,9 +19262,6 @@ styleInject(css$8);
 var css$9 = "/**\n * Copyright © 2015 - 2018 The Broad Institute, Inc. All rights reserved.\n * Licensed under the BSD 3-clause license (https://github.com/broadinstitute/gtex-viz/blob/master/LICENSE.md)\n */\n.violin-x-axis line, .violin-y-axis line, .violin-x-axis path, .violin-y-axis path{\n    font-family: \"Open Sans\", \"Helvetica\", \"Arial\", sans-serif;\n    fill: none;\n    stroke: Silver;\n    stroke-width: 1px;\n    shape-rendering: crispEdges;\n}\n\n.violin-x-axis text, .violin-y-axis text, .violin-x-axis-hide text {\n    font-family: \"Open Sans\", \"Helvetica\", \"Arial\", sans-serif;\n    fill: #2a718b;\n}\n\n.violin-size-axis text {\n    font-family: \"Open Sans\", \"Helvetica\", \"Arial\", sans-serif;\n    fill: #239db8;\n    font-size: 8px;\n}\n\n.violin-size-axis-hide text {\n    font-family: \"Open Sans\", \"Helvetica\", \"Arial\", sans-serif;\n    fill: #239db8;\n    font-size: 11px;\n}\n\n.violin-x-axis-hide line, .violin-x-axis-hide path{\n    fill: none;\n    stroke: Silver;\n    stroke-width: 0;\n    shape-rendering: crispEdges;\n}\n\n.violin-size-axis-hide line, .violin-size-axis-hide path{\n    fill: none;\n    stroke: Silver;\n    stroke-width: 0;\n    shape-rendering: crispEdges;\n}\n\n.violin-sub-axis line, .violin-sub-axis path{\n    stroke-width: 1px;\n    stroke: Silver;\n    shape-rendering: crispEdges;\n}\n\n.violin-sub-axis-hide line, .violin-sub-axis-hide path{\n    stroke-width: 0;\n    stroke: Silver;\n    shape-rendering: crispEdges;\n}\n\n.violin-sub-axis text, .violin-sub-axis-hide text {\n    fill: SlateGray;\n    font-size: 12px;\n    font-family: \"Open Sans\", \"Helvetica\", \"Arial\", sans-serif;\n\n}\n\n.violin-axis-label {\n    fill: SlateGray;\n    font-size: 12px;\n    font-family: \"Open Sans\", \"Helvetica\", \"Arial\", sans-serif;\n}\n.violin-group-label {\n    font-size: 12px;\n    text-anchor: middle;\n}\n\ndiv.violin-tooltip {\n   min-width: 50px;\n   display: none;\n   background-color : rgba(32, 53, 73, 0.95);\n   padding: 10px;\n   text-align:left;\n   color: #ffffff;\n   position:absolute;\n   font-size:12px;\n   z-index:4000;\n   border-radius:5px;\n}\n\npath.violin.highlighted {\n    stroke-width: 2px;\n    stroke: #555f66;\n}\n\nline.violin-median {\n    stroke-width: 2px;\n    stroke: #fff;\n}\n\nrect.violin-ir {\n    fill: #555f66;\n    stroke-width: 0;\n}\n\ntext.violin-legend-text {\n    fill: SlateGray;\n    font-size: 9px;\n    font-family: \"Open Sans\", \"Helvetica\", \"Arial\", sans-serif;\n\n}\n\n.violin-outliers circle {\n    stroke: #aaaaaa;\n    fill: none;\n}\n\n.violin-points circle {\n    stroke: #aaaaaa;\n    fill: #aaaaaa;\n}\n\n.violin-title {\n    font-size: 16px;\n    font-family: \"Open Sans\", \"Helvetica\", \"Arial\", sans-serif;\n}\n\n\n\n\n";
 styleInject(css$9);
 
-// import 'gtex-d3/css/expressMap.css'
-// import 'gtex-d3/css/isoform.css'
-
 require('typeface-libre-franklin');
 
 var TranscriptBrowserComponent =
@@ -19285,16 +19282,22 @@ function (_Component) {
 
     _this = _possibleConstructorReturn(this, (_getPrototypeOf2 = _getPrototypeOf(TranscriptBrowserComponent)).call.apply(_getPrototypeOf2, [this].concat(args)));
 
-    _defineProperty(_assertThisInitialized(_this), "componentDidUpdate", function () {
-      _this.update();
-    });
+    _defineProperty(_assertThisInitialized(_this), "element", void 0);
 
     return _this;
   }
 
   _createClass(TranscriptBrowserComponent, [{
     key: "update",
+
+    /* HTMLDivElement */
     value: function update() {
+      // Remove existing children from the container element
+      while (this.element.hasChildNodes()) {
+        this.element.removeChild(this.element.lastChild);
+      } // (Re)render the plot
+
+
       TranscriptBrowser.render(this.props.type, this.props.geneId, this.props.rootId, this.props.urls);
     }
   }, {
@@ -19303,12 +19306,29 @@ function (_Component) {
       this.update();
     }
   }, {
+    key: "componentDidUpdate",
+    value: function componentDidUpdate(prevProps, prevState, snapshot) {
+      var _this2 = this;
+
+      // Only update if any property has changed
+      if (['type', 'geneId', 'rootId', 'urls'].some(function (property) {
+        return _this2.props[property] !== prevProps[property];
+      })) {
+        this.update();
+      }
+    }
+  }, {
     key: "render",
     value: function render() {
+      var _this3 = this;
+
       return React.createElement(React.Fragment, null, React.createElement("h3", null, "Transcript browser"), React.createElement("div", {
         id: this.props.rootId,
         style: {
           width: '80%'
+        },
+        ref: function ref(e) {
+          _this3.element = e;
         }
       }));
     }
