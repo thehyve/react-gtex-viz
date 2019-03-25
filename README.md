@@ -28,4 +28,4 @@ class Example extends Component {
 
 ## License
 
- BSD-3-Clause © [The Hyve](https://github.com/thehyve)
+BSD-3-Clause © 2019 [The Hyve](https://github.com/thehyve).
