@@ -1,6 +1,7 @@
 # react-gtex-viz
 
-React components for visualisations from the GTEx web portal
+React components for visualisations from the [GTEx web portal].
+Based on the [gtex-viz] Javascript library.
 
 [![NPM](https://img.shields.io/npm/v/react-gtex-viz.svg)](https://www.npmjs.com/package/react-gtex-viz)
 [![Build Status](https://travis-ci.org/thehyve/react-gtex-viz.svg?branch=master)](https://travis-ci.org/thehyve/react-gtex-viz/branches)
@@ -33,3 +34,7 @@ class Example extends Component {
 ## License
 
 BSD-3-Clause © 2019 [The Hyve](https://github.com/thehyve).
+
+
+[GTEx web portal]: https://gtexportal.org
+[gtex-viz]: https://github.com/broadinstitute/gtex-viz
