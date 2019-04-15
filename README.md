@@ -11,8 +11,7 @@ Based on the [gtex-viz] Javascript library.
 ## Install
 
 ```bash
-# npm install --save react-gtex-viz
-npm install --save thehyve/react-gtex-viz
+npm install --save react-gtex-viz
 ```
 
 ## Usage
