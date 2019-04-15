@@ -1,6 +1,6 @@
 {
   "name": "react-gtex-viz",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "React components for visualisations from the GTEx web portal",
   "author": "Gijs Kant",
   "license": " BSD-3-Clause",
@@ -21,8 +21,8 @@
     "codecov": "codecov"
   },
   "dependencies": {
-    "jquery": "^3.3.1",
     "gtex-d3": "thehyve/gtex-viz#a30302f",
+    "jquery": "^3.3.1",
     "typeface-libre-franklin": "^0.0.54"
   },
   "peerDependencies": {
@@ -31,11 +31,11 @@
     "react-dom": "^15.0.0 || ^16.0.0"
   },
   "devDependencies": {
-    "@svgr/rollup": "^2.4.1",
     "@babel/core": "^7.0.0",
     "@babel/plugin-proposal-class-properties": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
+    "@svgr/rollup": "^2.4.1",
     "codecov": "^3.2.0",
     "cross-env": "^5.1.4",
     "enzyme": "^3.9.0",
