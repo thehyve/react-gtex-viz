@@ -18407,21 +18407,31 @@ class IsoformTrackViewer {
  * Licensed under the BSD 3-clause license (https://github.com/broadinstitute/gtex-viz/blob/master/LICENSE.md)
  */
 /**
+ * Function that fetches JSON data from a URL.
+ *
+ * @callback FetchJson
+ * @param {RequestInfo} info
+ * @param {RequestInit} init
+ * @return {object} the JSON object
+ */
+
+/**
  * Render expression heatmap, gene model, and isoform tracks
  * @param type {enum} isoform, exon, junction
  * @param geneId {String} a gene name or gencode ID
  * @param rootId {String} the DOM ID of the SVG
  * @param urls {Object} of the GTEx web service urls with attr: geneId, tissue, geneModelUnfiltered, geneModel, junctionExp, exonExp
+ * @param fetchJson {FetchJson} Function that fetches JSON data from a URL (default: json from d3-fetch)
  */
 
-function render(type, geneId, rootId, urls = getGtexUrls()) {
-  json(urls.geneId + geneId) // query the gene by geneId--gene name or gencode ID with or without versioning
+function render(type, geneId, rootId, urls = getGtexUrls(), fetchJson = json) {
+  fetchJson(urls.geneId + geneId) // query the gene by geneId--gene name or gencode ID with or without versioning
   .then(function (data) {
     // get the gene object and its gencode Id
     const gene = parseGenes(data, true, geneId);
     const gencodeId = gene.gencodeId; // build the promises
 
-    const promises = [json(urls.tissue), json(urls.geneModelUnfiltered + gencodeId), json(urls.geneModel + gencodeId), json(urls.transcript + gencodeId), json(urls.junctionExp + gencodeId), json(urls.exonExp + gencodeId), json(urls.transcriptExp + gencodeId), json(urls.exon + gencodeId)];
+    const promises = [fetchJson(urls.tissue), fetchJson(urls.geneModelUnfiltered + gencodeId), fetchJson(urls.geneModel + gencodeId), fetchJson(urls.transcript + gencodeId), fetchJson(urls.junctionExp + gencodeId), fetchJson(urls.exonExp + gencodeId), fetchJson(urls.transcriptExp + gencodeId), fetchJson(urls.exon + gencodeId)];
     Promise.all(promises).then(function (args) {
       const tissues = parseTissues(args[0]),
             exons = parseModelExons(args[1]),
@@ -19298,7 +19308,7 @@ function (_Component) {
       } // (Re)render the plot
 
 
-      TranscriptBrowser.render(this.props.type, this.props.geneId, this.props.rootId, this.props.urls);
+      TranscriptBrowser.render(this.props.type, this.props.geneId, this.props.rootId, this.props.urls, this.props.fetchJson);
     }
   }, {
     key: "componentDidMount",
@@ -19311,7 +19321,7 @@ function (_Component) {
       var _this2 = this;
 
       // Only update if any property has changed
-      if (['type', 'geneId', 'rootId', 'urls'].some(function (property) {
+      if (['type', 'geneId', 'rootId', 'urls', 'fetchJson'].some(function (property) {
         return _this2.props[property] !== prevProps[property];
       })) {
         this.update();
@@ -19340,13 +19350,15 @@ function (_Component) {
 TranscriptBrowserComponent.defaultPropTypes = {
   type: 'isoformTransposed',
   rootId: '',
-  urls: null
+  urls: null,
+  fetchJson: null
 };
 TranscriptBrowserComponent.propTypes = {
   type: PropTypes.string,
   geneId: PropTypes.string,
   rootId: PropTypes.string,
-  urls: PropTypes.object
+  urls: PropTypes.object,
+  fetchJson: PropTypes.func
 };
 
 export { TranscriptBrowserComponent };

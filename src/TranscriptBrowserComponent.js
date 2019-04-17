@@ -11,7 +11,8 @@ class TranscriptBrowserComponent extends Component {
       this.element.removeChild(this.element.lastChild)
     }
     // (Re)render the plot
-    TranscriptBrowser.render(this.props.type, this.props.geneId, this.props.rootId, this.props.urls)
+    TranscriptBrowser.render(this.props.type, this.props.geneId, this.props.rootId,
+      this.props.urls, this.props.fetchJson)
   }
 
   componentDidMount() {
@@ -20,7 +21,8 @@ class TranscriptBrowserComponent extends Component {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     // Only update if any property has changed
-    if (['type', 'geneId', 'rootId', 'urls'].some(property => this.props[property] !== prevProps[property])) {
+    if (['type', 'geneId', 'rootId', 'urls', 'fetchJson'].some(
+      property => this.props[property] !== prevProps[property])) {
       this.update()
     }
   }
@@ -38,14 +40,16 @@ class TranscriptBrowserComponent extends Component {
 TranscriptBrowserComponent.defaultPropTypes = {
   type: 'isoformTransposed',
   rootId: '',
-  urls: null
+  urls: null,
+  fetchJson: null,
 }
 
 TranscriptBrowserComponent.propTypes = {
   type: PropTypes.string,
   geneId: PropTypes.string,
   rootId: PropTypes.string,
-  urls: PropTypes.object
+  urls: PropTypes.object,
+  fetchJson: PropTypes.func
 }
 
 export default TranscriptBrowserComponent

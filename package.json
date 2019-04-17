@@ -21,7 +21,7 @@
     "codecov": "codecov"
   },
   "dependencies": {
-    "gtex-d3": "thehyve/gtex-viz#a30302f",
+    "gtex-d3": "thehyve/gtex-viz#140764f",
     "jquery": "^3.3.1",
     "typeface-libre-franklin": "^0.0.54"
   },
