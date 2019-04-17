@@ -51,6 +51,7 @@ npm run build
 git commit -a
 # Publish a new release
 npm login
+npm version patch  # for a patch release
 npm publish
 ```
 
