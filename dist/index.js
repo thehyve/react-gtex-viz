@@ -14430,13 +14430,12 @@ function sequential() {
  */
 
 function getGtexUrls() {
-  const host = 'https://gtexportal.org/rest/v1/'; // const host = 'local.gtexportal.org/rest/v1/'
+  const host = 'https://gtexportal.org/rest/v1/'; // const host = 'https://dev.gtexportal.org/rest/v1/';
 
   return {
     // gene-eqtl visualizer specific
     singleTissueEqtl: host + 'association/singleTissueEqtl?format=json&datasetId=gtex_v7&gencodeId=',
     ld: host + 'dataset/ld?format=json&datasetId=gtex_v7&gencodeId=',
-    tissueSummary: host + 'dataset/tissueSummary?datasetId=gtex_v7',
     // eqtl Dashboard specific
     dyneqtl: host + 'association/dyneqtl',
     snp: host + 'reference/variant?format=json&snpId=',
@@ -14460,9 +14459,7 @@ function getGtexUrls() {
     topInTissue: host + 'expression/topExpressedGene?datasetId=gtex_v7&sortBy=median&sortDirection=desc&pageSize=50&tissueSiteDetailId=',
     geneId: host + 'reference/gene?format=json&gencodeVersion=v19&genomeBuild=GRCh37%2Fhg19&geneId=',
     // tissue menu specific
-    // TODO: remove redundant URLs
-    tissue: host + 'metadata/tissueSiteDetail?format=json',
-    tissueSites: host + 'metadata/tissueSiteDetail?format=json',
+    tissue: host + 'dataset/tissueInfo?format=json&datasetId=gtex_v7',
     // local static files
     sample: 'tmpSummaryData/gtex.Sample.csv',
     rnaseqCram: 'tmpSummaryData/rnaseq_cram_files_v7_dbGaP_011516.txt',
@@ -14518,7 +14515,7 @@ function parseGenes(data, single = false, geneId = null) {
  */
 
 function parseTissues(json) {
-  const attr = 'tissueSiteDetail';
+  const attr = 'tissueInfo';
   if (!json.hasOwnProperty(attr)) throw 'Parsing Error: required json attr is missing: ' + attr;
   const tissues = json[attr]; // sanity check
 
@@ -15271,7 +15268,8 @@ function drawColorLegend(title, dom, scale, config, useLog, ticks = 10, base = 1
     dom.append("text").attr("class", "color-legend").text(title).attr("x", -10).attr("text-anchor", "end").attr("y", cell.h).attr("transform", `translate(${config.x}, ${config.y})`); // the color legend
 
     g.append("rect").attr("x", (d, i) => cell.w * i).attr("y", 5).attr("width", cell.w).attr("height", cell.h).style("fill", scale);
-    g.append("text").attr("class", "color-legend").text(d => useLog ? Math.pow(base, d).toPrecision(2) : d.toPrecision(2)).attr("x", (d, i) => cell.w * i).attr("y", 0);
+    g.append("text").attr("class", "color-legend").text(d => useLog ? (Math.pow(base, d) - 1).toPrecision(2) : d.toPrecision(2)) // assuming that raw value had been adjusted by +1 to deal with log transforming zeros
+    .attr("x", (d, i) => cell.w * i).attr("y", 0);
   } else {
     // legend title
     dom.append("text").attr("class", "color-legend").text(title).attr("x", 5).attr("text-anchor", "start").attr("y", 0).attr("transform", `translate(${config.x}, ${config.y + cell.h * data.length})rotate(90)`);
@@ -15374,8 +15372,9 @@ class DendroHeatmapConfig {
 function checkDomId(id) {
   // test input params
   if (jquery(`#${id}`).length == 0) {
-    let error = `Input Error: DOM ID ${id} is not found.`;
-    alert(error);
+    let error = `Input Error: DOM ID ${id} is not found.`; //alert(error);
+
+    console.warn(error);
     throw error;
   }
 }
@@ -17343,7 +17342,7 @@ class Heatmap {
   draw(dom, dimensions = {
     w: 1000,
     h: 600
-  }, angle = 30, useNullColor = true, columnLabelPosAdjust = null) {
+  }, angle = 30, useNullColor = false, columnLabelPosAdjust = null) {
     if (this.xList === undefined) this._setXScale(dimensions.w);
     if (this.yList === undefined) this._setYScale(dimensions.h);
     if (this.colorScale === undefined) this._setColorScale(); // text labels
@@ -17530,7 +17529,6 @@ class DendroHeatmap {
     }
 
     if (this.title != '') {
-      console.log(this.title);
       select(`#${domId}-svg`).append('text').attr('x', 0).attr('y', 20).text(this.title);
     }
 
@@ -18432,13 +18430,31 @@ class IsoformTrackViewer {
  */
 
 function render(type, geneId, rootId, urls = getGtexUrls(), fetchJson = json) {
-  fetchJson(urls.geneId + geneId) // query the gene by geneId--gene name or gencode ID with or without versioning
+  fetchJson(urls.geneId + geneId, {
+    credentials: 'include'
+  }) // query the gene by geneId--gene name or gencode ID with or without versioning
   .then(function (data) {
     // get the gene object and its gencode Id
     const gene = parseGenes(data, true, geneId);
     const gencodeId = gene.gencodeId; // build the promises
 
-    const promises = [fetchJson(urls.tissue), fetchJson(urls.geneModelUnfiltered + gencodeId), fetchJson(urls.geneModel + gencodeId), fetchJson(urls.transcript + gencodeId), fetchJson(urls.junctionExp + gencodeId), fetchJson(urls.exonExp + gencodeId), fetchJson(urls.transcriptExp + gencodeId), fetchJson(urls.exon + gencodeId)];
+    const promises = [fetchJson(urls.tissue, {
+      credentials: 'include'
+    }), fetchJson(urls.geneModelUnfiltered + gencodeId, {
+      credentials: 'include'
+    }), fetchJson(urls.geneModel + gencodeId, {
+      credentials: 'include'
+    }), fetchJson(urls.transcript + gencodeId, {
+      credentials: 'include'
+    }), fetchJson(urls.junctionExp + gencodeId, {
+      credentials: 'include'
+    }), fetchJson(urls.exonExp + gencodeId, {
+      credentials: 'include'
+    }), fetchJson(urls.transcriptExp + gencodeId, {
+      credentials: 'include'
+    }), fetchJson(urls.exon + gencodeId, {
+      credentials: 'include'
+    })];
     Promise.all(promises).then(function (args) {
       const tissues = parseTissues(args[0]),
             exons = parseModelExons(args[1]),
@@ -18454,7 +18470,7 @@ function render(type, geneId, rootId, urls = getGtexUrls(), fetchJson = json) {
             exonExpress = parseExonExpression(args[5], exonsCurated);
       let isoformExpress = parseTranscriptExpression(args[6]); // error checking
 
-      let exonColorScale, isoformColorScale, junctionColorScale;
+      let exonColorScale, isoformColorScale, junctionColorScale; // in log
 
       if (junctions.length >= 0) {
         // scenario1: not a single-exon gene
@@ -18781,7 +18797,13 @@ function _customizeIsoformTransposedMap(tissues, dmap, isoTrackViewer, junctionS
     const tissue = tissueDict[d.x] === undefined ? d.x : tissueDict[d.x].tissueSiteDetail; // get tissue name or ID
 
     const value = parseFloat(d.displayValue.toExponential()).toPrecision(3);
-    tooltip.show(`Tissue: ${tissue}<br/> Isoform: ${d.id}<br/> ${d.unit}: ${value === 0 ? 'NA' : value}`);
+    tooltip.show(`Tissue: ${tissue}<br/> Isoform: ${d.transcriptId}<br/> ${d.unit}: ${value}`); // highlight the isoform track
+
+    const id = d.transcriptId.replace(".", "_"); // dot is not an allowable character, so it has been replaced with an underscore
+
+    mapSvg.select(`#${id}`).selectAll(".exon-curated").classed("highlighted", true); // TODO: perhaps change the confusing class name
+
+    mapSvg.select(`#${id}`).selectAll(".intron").classed("highlighted", true);
   }).on("mouseout", function (d) {
     mapSvg.selectAll("*").classed('highlighted', false);
     tooltip.hide();
@@ -18792,7 +18814,7 @@ function _customizeIsoformTransposedMap(tissues, dmap, isoTrackViewer, junctionS
 
     const id = d.replace(".", "_"); // dot is not an allowable character, so it has been replaced with an underscore
 
-    mapSvg.select(`#${id}`).selectAll(".exon-curated").classed("highlighted", true); // TODO: perhaps change the class name?
+    mapSvg.select(`#${id}`).selectAll(".exon-curated").classed("highlighted", true); // TODO: perhaps change the confusing class name
 
     mapSvg.select(`#${id}`).selectAll(".intron").classed("highlighted", true);
   }).on("mouseout", function () {
@@ -18828,7 +18850,10 @@ function _customizeExonMap(tissues, geneModel, dmap) {
     const tissue = tissueDict[d.y] === undefined ? d.x : tissueDict[d.y].tissueSiteDetail; // get tissue name or ID
 
     const value = parseFloat(d.displayValue.toExponential()).toPrecision(3);
-    tooltip.show(`Tissue: ${tissue}<br/> Exon: ${d.exonId}<br/> ${d.chromStart} - ${d.chromEnd} (${Number(d.chromEnd) - Number(d.chromStart) + 1}bp) <br/>${d.unit}: ${value == 0 ? 'NA' : value}`);
+    tooltip.show(`Tissue: ${tissue}<br/> Exon: ${d.exonId}<br/> ${d.chromStart} - ${d.chromEnd} (${Number(d.chromEnd) - Number(d.chromStart) + 1}bp) <br/>${d.unit}: ${value}`); // highlight the exon on the gene model
+
+    const exonNumber = d.exonId.split("_")[1];
+    mapSvg.selectAll(`.exon-curated${exonNumber}`).classed("highlighted", true);
   }).on("mouseout", function (d) {
     mapSvg.selectAll("*").classed('highlighted', false);
     tooltip.hide();
@@ -18873,7 +18898,14 @@ function _customizeJunctionMap(tissues, geneModel, dmap) {
     const junc = geneModel.junctions.filter(j => j.junctionId === d.x && !j.filtered)[0]; // get the junction display name
 
     const value = parseFloat(d.displayValue.toExponential()).toPrecision(3);
-    tooltip.show(`Tissue: ${tissue}<br/> Junction: ${junc.displayName} (${Number(junc.chromEnd) - Number(junc.chromStart)} bp)<br/> ${d.unit}: ${value === 0 ? 'NA' : value}`);
+    tooltip.show(`Tissue: ${tissue}<br/> Junction: ${junc.displayName} (${Number(junc.chromEnd) - Number(junc.chromStart)} bp)<br/> ${d.unit}: ${value}`); // highlight the junction and its exons on the gene model
+
+    mapSvg.selectAll(`.junc${junc.junctionId}`).classed("highlighted", true);
+
+    if (junc !== undefined) {
+      mapSvg.selectAll(`.exon${junc.startExon.exonNumber}`).classed("highlighted", true);
+      mapSvg.selectAll(`.exon${junc.endExon.exonNumber}`).classed("highlighted", true);
+    }
   }).on("mouseout", function (d) {
     mapSvg.selectAll("*").classed('highlighted', false);
     tooltip.hide();
@@ -18919,7 +18951,6 @@ function _customizeGeneModel(tissues, geneModel, dmap) {
   mapSvg.selectAll(".junc").on("mouseover", function (d) {
     selectAll(`.junc${d.junctionId}`).classed("highlighted", true);
     tooltip.show(`${d.displayName}<br/>Junction ${d.junctionId} (${Number(d.chromEnd) - Number(d.chromStart) + 1} bp)`);
-    console.log(d);
 
     if (d.startExon !== undefined) {
       model.selectAll(".exon").filter(`.exon${d.startExon.exonNumber}`).classed("highlighted", true);

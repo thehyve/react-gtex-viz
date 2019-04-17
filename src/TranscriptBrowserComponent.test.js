@@ -48,7 +48,7 @@ describe('TranscriptBrowserComponent', () => {
     geneModel: `${apiBase}/dataset/collapsedGeneModelExon?datasetId=${dataSetId}&gencodeId=`,
     geneModelUnfiltered: `${apiBase}/dataset/fullCollapsedGeneModelExon?datasetId=${dataSetId}&gencodeId=`,
 
-    tissue: `${apiBase}/metadata/tissueSiteDetail?format=json`,
+    tissue: `${apiBase}/dataset/tissueInfo?format=json&datasetId=${dataSetId}`,
 
     geneId: `${apiBase}/reference/gene?format=json&gencodeVersion=${gencodeVersion}&genomeBuild=${genomeBuild}&geneId=`
   }
