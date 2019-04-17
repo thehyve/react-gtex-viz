@@ -19359,7 +19359,7 @@ function (_Component) {
       var _this2 = this;
 
       // Only update if any property has changed
-      if (['type', 'geneId', 'rootId', 'urls', 'fetchJson'].some(function (property) {
+      if (['type', 'geneId', 'rootId'].some(function (property) {
         return _this2.props[property] !== prevProps[property];
       })) {
         this.update();
@@ -19373,7 +19373,7 @@ function (_Component) {
       return React__default.createElement(React__default.Fragment, null, React__default.createElement("h3", null, "Transcript browser"), React__default.createElement("div", {
         id: this.props.rootId,
         style: {
-          width: '80%'
+          width: '100%'
         },
         ref: function ref(e) {
           _this3.element = e;

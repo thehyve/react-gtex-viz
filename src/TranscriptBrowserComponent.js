@@ -5,6 +5,7 @@ require('typeface-libre-franklin')
 
 class TranscriptBrowserComponent extends Component {
   element; /* HTMLDivElement */
+
   update() {
     // Remove existing children from the container element
     while (this.element.hasChildNodes()) {
@@ -21,7 +22,7 @@ class TranscriptBrowserComponent extends Component {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     // Only update if any property has changed
-    if (['type', 'geneId', 'rootId', 'urls', 'fetchJson'].some(
+    if (['type', 'geneId', 'rootId'].some(
       property => this.props[property] !== prevProps[property])) {
       this.update()
     }
@@ -31,7 +32,7 @@ class TranscriptBrowserComponent extends Component {
     return (
       <React.Fragment>
         <h3>Transcript browser</h3>
-        <div id={this.props.rootId} style={{width: '80%'}} ref={(e) => { this.element = e }} />
+        <div id={this.props.rootId} style={{width: '100%'}} ref={(e) => { this.element = e }} />
       </React.Fragment>
     )
   }
