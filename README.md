@@ -30,6 +30,32 @@ class Example extends Component {
 }
 ```
 
+## Development
+
+Build the library
+```bash
+npm run build
+```
+
+Run the tests
+```bash
+npm run coverage
+```
+
+Release a new version
+```bash
+# Prepare a new release
+npm install
+npm run build
+# Commit any changes
+git commit -a
+# Publish a new release
+npm login
+npm publish
+```
+
+
+
 ## License
 
 BSD-3-Clause © 2019 [The Hyve](https://github.com/thehyve).
