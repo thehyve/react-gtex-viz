@@ -42,7 +42,7 @@ TranscriptBrowserComponent.defaultPropTypes = {
   type: 'isoformTransposed',
   rootId: '',
   urls: null,
-  fetchJson: null,
+  fetchJson: null
 }
 
 TranscriptBrowserComponent.propTypes = {

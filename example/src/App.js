@@ -3,7 +3,6 @@ import React, { Component } from 'react'
 import {TranscriptBrowserComponent} from 'react-gtex-viz'
 
 export default class App extends Component {
-
   state = {
     geneSearch: 'ENSG00000130164',
     gene: 'ENSG00000130164'
